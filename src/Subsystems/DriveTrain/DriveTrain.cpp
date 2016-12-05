@@ -4,10 +4,12 @@
  *
  * leftMotorPin - left motor object
  * rightMotorPin - Right motor object
+ * encoderCounter - Encoder Counter object
  */
-DriveTrain::DriveTrain(Motor *leftMotor, Motor *rightMotor) {
+DriveTrain::DriveTrain(Motor *leftMotor, Motor *rightMotor, EncoderCounter *encoderCounter) {
   _leftMotor = leftMotor;
   _rightMotor = rightMotor;
+  _encoders = encoderCounter;
 }
 
 /* writeToMotors - void

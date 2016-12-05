@@ -2,6 +2,7 @@
 #include "Utilities.h"
 #include "RobotMap.h"
 
+#include <SPI.h>
 #include <LiquidCrystal.h>
 
 #include "Motor/PololuMotor/PololuMotor.hpp"
@@ -43,7 +44,10 @@ void setup() {
   // Initialize Subsystems
   PololuMotor *left = new PololuMotor(PIN_MOTOR_LEFT_A, PIN_MOTOR_LEFT_B);
   PololuMotor *right = new PololuMotor(PIN_MOTOR_RIGHT_A, PIN_MOTOR_RIGHT_B);
-  driveTrain = new DriveTrain(left, right);
+
+  EncoderCounter *encoders = new EncoderCounter(PIN_SENSOR_ENCODER_SS1, PIN_SENSOR_ENCODER_SS2);
+
+  driveTrain = new DriveTrain(left, right, encoders);
 
   // Start task state-machine at the correct task
   currentTask = new CalibrationTask(driveTrain);
