@@ -1,10 +1,10 @@
-#include "Motor.hpp"
+#include "VexMotor.hpp"
 
 /* constructor
  *
  * pin - Pin to attach the motor to
  */
-Motor::Motor(int8 pin) {
+VexMotor::VexMotor(int8 pin) {
   motor.attach(pin, 1000, 2000);
   inverted = false;
 }
@@ -14,7 +14,7 @@ Motor::Motor(int8 pin) {
  * pin - Pin to attach the motor to
  * invert - sets motor to be inverted or not
  */
-Motor::Motor(int8 pin, bool16 invert) {
+VexMotor::VexMotor(int8 pin, bool16 invert) {
   motor.attach(pin, 1000, 2000);
   inverted = invert;
 }
@@ -23,7 +23,7 @@ Motor::Motor(int8 pin, bool16 invert) {
  *
  * speed - Speed (-1 to 1)
  */
-int Motor::speedToMotorValue(float speed) {
+int VexMotor::speedToMotorValue(float speed) {
   int integerSpeed = speed * 100;
   return (int)map(integerSpeed, -100, 100, MOTOR_MIN_VALUE, MOTOR_MAX_VALUE);
 }
@@ -32,7 +32,7 @@ int Motor::speedToMotorValue(float speed) {
  *
  * speed - Speed (-1 to 1)
  */
-void Motor::write(float speed) {
+void VexMotor::write(float speed) {
   int motorValue = speedToMotorValue(speed);
 
   motor.write(inverted ? MOTOR_MAX_VALUE - motorValue : motorValue);

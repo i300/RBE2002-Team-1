@@ -4,6 +4,7 @@
 
 #include <LiquidCrystal.h>
 
+#include "Motor/PololuMotor/PololuMotor.hpp"
 #include "Subsystems/DriveTrain/DriveTrain.hpp"
 
 #include "RobotTask/RobotTask.hpp"
@@ -40,7 +41,9 @@ void setup() {
   lcd.clear();
 
   // Initialize Subsystems
-  //driveTrain = new DriveTrain(left, right);
+  PololuMotor *left = new PololuMotor(PIN_MOTOR_LEFT_A, PIN_MOTOR_LEFT_B);
+  PololuMotor *right = new PololuMotor(PIN_MOTOR_RIGHT_A, PIN_MOTOR_RIGHT_B);
+  driveTrain = new DriveTrain(left, right);
 
   // Start task state-machine at the correct task
   currentTask = new CalibrationTask(driveTrain);
