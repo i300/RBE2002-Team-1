@@ -6,10 +6,17 @@
  * rightMotorPin - Right motor object
  * encoderCounter - Encoder Counter object
  */
-DriveTrain::DriveTrain(Motor *leftMotor, Motor *rightMotor, EncoderCounter *encoderCounter) {
+ DriveTrain::DriveTrain(Motor *leftMotor, Motor *rightMotor, EncoderCounter *encoderCounter,
+                        uint8 frontIRPin, uint8 sideIRPin, uint8 rearIRPin) {
   _leftMotor = leftMotor;
   _rightMotor = rightMotor;
   _encoders = encoderCounter;
+
+  frontIR = new SharpIR(frontIRPin, 1080);
+  sideIR = new SharpIR(sideIRPin, 1080);
+  rearIR = new SharpIR(rearIRPin, 1080);
+
+  writeToMotors(0, 0);
 }
 
 /* writeToMotors - void
@@ -32,8 +39,8 @@ void DriveTrain::arcadeDrive(float speed, float rotation) {
   if (rotation == 0) tankDrive(speed, speed);
 
   // constrain speed and roation to intended values (-1 to 1)
-  speed = constrain(speed, -1, 1);
-  rotation = constrain(rotation, -1, 1);
+  speed = constrain(speed, -1.0, 1.0);
+  rotation = constrain(rotation, -1.0, 1.0);
 
   float leftMotorSpeed, rightMotorSpeed;
 
@@ -58,7 +65,8 @@ void DriveTrain::arcadeDrive(float speed, float rotation) {
   }
 
   // drive robot
-  writeToMotors(leftMotorSpeed, rightMotorSpeed);
+  leftSetpoint = leftMotorSpeed;
+  rightSetpoint = rightMotorSpeed;
 }
 
 /* tankDrive - void
@@ -69,16 +77,41 @@ void DriveTrain::arcadeDrive(float speed, float rotation) {
  */
 void DriveTrain::tankDrive(float left, float right) {
   // constrain speeds to intended values (-1 to 1)
-  left = constrain(left, -1, 1);
-  right = constrain(right, -1, 1);
+  left = constrain(left, -1.0, 1.0);
+  right = constrain(right, -1.0, 1.0);
 
   // write to motors
-  writeToMotors(left, right);
+  leftSetpoint = left;
+  rightSetpoint = right;
+}
+
+void DriveTrain::resetEncoderCount() {
+  _encoders->clearCount();
+}
+
+EncoderCounts DriveTrain::getEncoderCount() {
+  EncoderCounts e = {0};
+  e.left = _encoders->readEncoder(2);
+  e.right = -_encoders->readEncoder(1);
+  return e;
+}
+
+void DriveTrain::update() {
+  if (ramping) {
+    leftSpeed += (leftSetpoint - leftSpeed) * kP_ramping;
+    rightSpeed += (rightSetpoint - rightSpeed) * kP_ramping;
+  } else {
+    leftSpeed = leftSetpoint;
+    rightSpeed = rightSetpoint;
+  }
+
+  writeToMotors(leftSpeed, rightSpeed);
 }
 
 /* stop - void
  * Sends zero to the drive motors to stop motion
  */
 void DriveTrain::stop() {
-  writeToMotors(0, 0);
+  leftSetpoint = 0;
+  rightSetpoint = 0;
 }

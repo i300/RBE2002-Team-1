@@ -6,8 +6,12 @@
  * pinr - Reverse motor pin
  */
 PololuMotor::PololuMotor(uint8 pinf, uint8 pinr) {
+  pinMode(pinf, OUTPUT);
+  pinMode(pinr, OUTPUT);
+
   pinForward = pinf;
   pinReverse = pinr;
+
   inverted = false;
 }
 
@@ -18,8 +22,12 @@ PololuMotor::PololuMotor(uint8 pinf, uint8 pinr) {
  * invert - sets motor to be inverted or not
  */
 PololuMotor::PololuMotor(uint8 pinf, uint8 pinr, bool16 invert) {
+  pinMode(pinf, OUTPUT);
+  pinMode(pinr, OUTPUT);
+
   pinForward = pinf;
   pinReverse = pinr;
+
   inverted = invert;
 }
 
@@ -28,9 +36,9 @@ PololuMotor::PololuMotor(uint8 pinf, uint8 pinr, bool16 invert) {
  * speed - Speed (-1 to 1)
  */
 int PololuMotor::speedToMotorValue(float speed) {
-  speed = constrain(speed, -1, 1);
+  speed = constrain(speed, -1.0, 1.0);
 
-  return speed * 255;
+  return speed * (inverted ? -255.0 : 255.0);
 }
 
 /* write - Converts a speed to a motor value, then writes it to the motor
@@ -45,6 +53,6 @@ void PololuMotor::write(float speed) {
     analogWrite(pinReverse, 0);
   } else {
     analogWrite(pinForward, 0);
-    analogWrite(pinReverse, motorValue);
+    analogWrite(pinReverse, -motorValue);
   }
 }

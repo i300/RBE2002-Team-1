@@ -27,13 +27,14 @@ protected:
   bool8 _finished;
 
   unsigned long _timeStarted;
+  unsigned long getTimeStarted();
 
   virtual void finished();
-  unsigned long getTimeStarted();
 
 public:
   RobotTask();
   RobotTask(RobotTaskType type);
+  virtual ~RobotTask() {};
 
   RobotTaskType getType();
   virtual bool8 isFinished();
