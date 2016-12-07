@@ -96,6 +96,22 @@ EncoderCounts DriveTrain::getEncoderCount() {
   return e;
 }
 
+float DriveTrain::getIRReading(IRLocation loc) {
+  switch (loc) {
+    case IR_FRONT:
+      return frontIR->distance() / 2.54;
+      break;
+
+    case IR_SIDE:
+      return sideIR->distance() / 2.54;
+      break;
+
+    case IR_REAR:
+      return rearIR->distance() / 2.54;
+      break;
+  }
+}
+
 void DriveTrain::update() {
   if (ramping) {
     leftSpeed += (leftSetpoint - leftSpeed) * kP_ramping;

@@ -12,6 +12,12 @@ struct EncoderCounts {
   long right;
 };
 
+enum IRLocation {
+  IR_FRONT,
+  IR_SIDE,
+  IR_REAR
+};
+
 class DriveTrain {
   Motor *_leftMotor, *_rightMotor;
   EncoderCounter *_encoders;
@@ -41,6 +47,8 @@ public:
 
   void resetEncoderCount();
   EncoderCounts getEncoderCount();
+
+  float getIRReading(IRLocation loc);
 
   void update();
   void stop();

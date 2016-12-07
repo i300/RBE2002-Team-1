@@ -29,7 +29,7 @@ void SystemCheckTask::update() {
     case CS_DRIVE1:
       _driveTrain->tankDrive(1, 1);
       _turret->setAngle(0);
-      if (currentTime > timeLastStateSwitch + 2000) {
+      if (_driveTrain->getIRReading(IR_FRONT) < 5) {
         timeLastStateSwitch = currentTime;
         _driveTrain->resetEncoderCount();
         state = CS_TURN1;
@@ -39,10 +39,10 @@ void SystemCheckTask::update() {
     case CS_TURN1: {
       _turret->setAngle(90);
       EncoderCounts e = _driveTrain->getEncoderCount();
-      float leftSpeed = (6400 - abs(e.left)) / 3200.0;
-      float rightSpeed = (6400 - abs(e.right)) / 3200.0;
+      float leftSpeed = (3200 - abs(e.left)) / 1000.0;
+      float rightSpeed = (3200 - abs(e.right)) / 1000.0;
       _driveTrain->tankDrive(leftSpeed, -rightSpeed);
-      if ((e.left > 6200) && (e.right < -6200)) {
+      if ((e.left > 3000) && (e.right < -3000)) {
         timeLastStateSwitch = currentTime;
         state = CS_DRIVE2;
         _turret->fanOn();
@@ -51,9 +51,9 @@ void SystemCheckTask::update() {
     }
 
     case CS_DRIVE2:
-      _driveTrain->tankDrive(0.25, 0.25);
+      _driveTrain->tankDrive(0.4, 0.4);
       _turret->setAngle(180);
-      if (currentTime > timeLastStateSwitch + 4500) {
+      if (_driveTrain->getIRReading(IR_FRONT) < 5) {
         timeLastStateSwitch = currentTime;
         state = CS_FINISHED;
         _turret->fanOff();
