@@ -14,10 +14,14 @@
 
 #include "RobotTask/RobotTask.hpp"
 #include "RobotTask/Tasks/SystemCheckTask.hpp"
+#include "RobotTask/Tasks/FollowWallTask.hpp"
 
 // Subsystems
 DriveTrain *driveTrain;
 FanTurret *turret;
+
+// Sensors
+IMU *imu;
 
 // Task stuff
 RobotTask *currentTask;
@@ -35,7 +39,10 @@ void setup() {
   delay(50); // Hold up, wait a minute
   lcd.clear(); // Clear LCD
 
-  delay(500);
+  lcd.print("Calibrating IMU");
+
+  imu = new IMU();
+  imu->init();
 
   // Initialize Subsystems
   PololuMotor *left = new PololuMotor(PIN_MOTOR_LEFT_A, PIN_MOTOR_LEFT_B);
@@ -43,11 +50,12 @@ void setup() {
 
   EncoderCounter *encoders = new EncoderCounter(PIN_SENSOR_ENCODER_SS1, PIN_SENSOR_ENCODER_SS2);
 
-  driveTrain = new DriveTrain(left, right, encoders,
+  driveTrain = new DriveTrain(left, right, encoders, imu,
                               PIN_SENSOR_IR_FRONT, PIN_SENSOR_IR_SIDE, PIN_SENSOR_IR_BACK);
   turret = new FanTurret(PIN_SERVO_FAN, PIN_FAN);
 
-  lcd.print("Waiting to start...");
+  lcd.clear();
+  lcd.print("Waiting to start");
 
   pinMode(PIN_SENSOR_STARTBUTTON, INPUT_PULLUP);
   while (digitalRead(PIN_SENSOR_STARTBUTTON) == 1) {
@@ -57,6 +65,7 @@ void setup() {
   lcd.clear();
 
   // Start task state-machine at the correct task
+  //currentTask = new FollowWallTask(driveTrain, turret);
   currentTask = new SystemCheckTask(driveTrain, turret);
 }
 
@@ -68,6 +77,7 @@ void loop() {
 
   // Update Subsystems
   driveTrain->update();
+  imu->update();
 
   // Update current task
   currentTask->update();
@@ -84,10 +94,6 @@ void loop() {
         // Nothing to see here...
         break;
 
-      case CALIBRATION:
-        //currentTask = new PickUpFromReactorTask(driveTrain, rodGrabber, fieldController);
-        break;
-
       default:
         //currentTask = new RobotTask();
         break;
@@ -100,11 +106,13 @@ void loop() {
     lcd.clear();
 
     #ifndef DEBUG
-      EncoderCounts e = driveTrain->getEncoderCount();
       lcd.setCursor(0, 0);
-      lcd.print("L: "); lcd.print(e.left);
-      lcd.setCursor(0, 1);
-      lcd.print("R: "); lcd.print(e.right);
+      //EncoderCounts e = driveTrain->getEncoderCount();
+      //lcd.print("L: "); lcd.print(e.left);
+      //lcd.setCursor(0, 1);
+      //lcd.print("R: "); lcd.print(e.right);
+      //lcd.print("IR: "); lcd.print(driveTrain->getIRReading(IR_SIDE));
+      lcd.print("IMU: "); lcd.print(imu->getGyroReading().z);
     #else
       lcd.setCursor(0, 1);
     #endif

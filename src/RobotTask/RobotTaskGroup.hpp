@@ -10,17 +10,18 @@
 
 class RobotTaskGroup : public RobotTask {
   RobotTask *tasks[TASK_LIST_SIZE];
-  RobotTask *currentTask = nullptr;
+  int currentTaskIndex = 0;
+  int numTasks = 0;
 
 protected:
   void finished();
 
 public:
   RobotTaskGroup();
-  ~RobotTaskGroup();
+  virtual ~RobotTaskGroup();
 
   void add(RobotTask *task);
-  void update();
+  virtual void update();
   bool8 isFinished();
 };
 

@@ -1,10 +1,17 @@
 #include "IMU.hpp"
 
 IMU::IMU() {
+
+}
+
+void IMU::init() {
+  Serial.println("Wire Begin");
   Wire.begin(); // i2c begin
 
+  Serial.println("Gyro Init");
   initGyro();
 
+  Serial.println("Gyro Enable");
   timer = millis(); // init timer for first reading
   gyro.enableDefault(); // gyro init. default 250/deg/s
   delay(1000);// allow time for gyro to settle
@@ -34,7 +41,9 @@ void IMU::initAccel() {
 void IMU::initGyro() {
   if (!gyro.init()) {
     Serial.println("Failed to autodetect gyro type!");
-    while (1);
+    while (1) {
+      delay(1000);
+    }
   }
 }
 
@@ -63,7 +72,7 @@ void IMU::readGyro() {
   gyro_y = gyro_y*G_Dt;
   gyro_z = gyro_z*G_Dt;
 
-  gyro_x +=gyro_xold; // add the displacment(rotation) to the cumulative displacment
+  gyro_x += gyro_xold; // add the displacment(rotation) to the cumulative displacment
   gyro_y += gyro_yold;
   gyro_z += gyro_zold;
 
@@ -76,7 +85,7 @@ void IMU::filterOutput() {
   readGyro();
   readAccel();
 
-  float x_Acc,y_Acc;
+  float x_Acc,y_Acc,z_Acc;
   float magnitudeofAccel= (abs(accel_x)+abs(accel_y)+abs(accel_z));
   if (magnitudeofAccel > 6 && magnitudeofAccel < 1.2) {
     x_Acc = atan2(accel_y,accel_z)*180/ PI;
@@ -85,7 +94,8 @@ void IMU::filterOutput() {
     y_Acc = atan2(accel_x,accel_z)* 180/PI;
     gyro_y = gyro_y * 0.98 + y_Acc * 0.02;
 
-    // TODO: Filter Z axis???
+    z_Acc = atan2(accel_x,accel_y)* 180/PI;
+    gyro_z = gyro_z * 0.98 + z_Acc * 0.02;
   }
 }
 
@@ -105,16 +115,39 @@ void IMU::readAccel() {
 void IMU::update() {
   // 50hz update loop
   if ((millis() - timer) >= 20) {
-    filterOutput();
+    //filterOutput();
+    readGyro();
     timer = millis(); //reset timer
   }
 }
 
+void IMU::clear() {
+  gyro_x = 0; // gyro x val
+  gyro_y = 0; // gyro x val
+  gyro_z = 0; // gyro x val
+  gyro_xold = 0; // gyro cummulative x value
+  gyro_yold = 0; // gyro cummulative y value
+  gyro_zold = 0; // gyro cummulative z value
+  gerrx = 0; // gyro x error
+  gerry = 0; // gyro y error
+  gerrz = 0; // gyro z error
+
+  accel_x = 0; // accel x val
+  accel_y = 0; // accel x val
+  accel_z = 0; // accel x val
+  accel_xold = 0; // accel cummulative x value
+  accel_yold = 0; // accel cummulative y value
+  accel_zold = 0; // accel cummulative z value
+  aerrx = 0; // Accel x error
+  aerry = 0; // Accel y error
+  aerrz = 0; // Accel z error
+}
+
 IMUReading IMU::getGyroReading() {
-  IMUReading reading;
-  reading.x = gyro_x;
-  reading.y = gyro_y;
-  reading.z = gyro_z;
+  IMUReading reading = {0};
+  reading.x = gyro_x; Serial.print("X: " + String(gyro_x));
+  reading.y = gyro_y; Serial.print(" Y: " + String(gyro_y));
+  reading.z = gyro_z; Serial.println(" Z: " + String(gyro_z));
   return reading;
 }
 

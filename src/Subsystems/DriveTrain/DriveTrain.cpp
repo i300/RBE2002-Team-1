@@ -6,11 +6,12 @@
  * rightMotorPin - Right motor object
  * encoderCounter - Encoder Counter object
  */
- DriveTrain::DriveTrain(Motor *leftMotor, Motor *rightMotor, EncoderCounter *encoderCounter,
+ DriveTrain::DriveTrain(Motor *leftMotor, Motor *rightMotor, EncoderCounter *encoderCounter, IMU *imu,
                         uint8 frontIRPin, uint8 sideIRPin, uint8 rearIRPin) {
   _leftMotor = leftMotor;
   _rightMotor = rightMotor;
   _encoders = encoderCounter;
+  _imu = imu;
 
   frontIR = new SharpIR(frontIRPin, 1080);
   sideIR = new SharpIR(sideIRPin, 1080);
@@ -69,6 +70,47 @@ void DriveTrain::arcadeDrive(float speed, float rotation) {
   rightSetpoint = rightMotorSpeed;
 }
 
+void DriveTrain::driveStraight(float speed) {
+
+}
+
+void DriveTrain::resetIMU() {
+  _imu->clear();
+}
+
+// Direction: 1 is cw, -1 is ccw
+bool DriveTrain::turnDegrees(float deg, int direction) {
+  unsigned long currentTime = millis();
+
+  if (currentTime > lastTurnUpdate + 1000) {
+    sumTurnError = 0;
+    lastTurnError = 0;
+  }
+
+  IMUReading r = _imu->getGyroReading();
+  float error = deg - r.z;
+  float kP_turning = 0.0075;
+  float kI_turning = 0.0;
+  float kD_turning = 0.005;
+
+  float iPart = sumTurnError;
+  float dPart = error - lastTurnError;
+
+  sumTurnError += error;
+  lastTurnError = error;
+
+  float pidOutput = (error * kP_turning) + (iPart * kI_turning) + (dPart * kD_turning);
+  pidOutput = constrain(pidOutput, -1, 1);
+
+  float turnSpeed = 1;
+
+  tankDrive(turnSpeed * pidOutput * -direction, turnSpeed * pidOutput * direction);
+
+  lastTurnUpdate = currentTime;
+
+  return (error < 10) && (dPart < 0.1);
+}
+
 /* tankDrive - void
  * Drive robot based on left values and right speeds
  *
@@ -91,8 +133,8 @@ void DriveTrain::resetEncoderCount() {
 
 EncoderCounts DriveTrain::getEncoderCount() {
   EncoderCounts e = {0};
-  e.left = _encoders->readEncoder(2);
-  e.right = -_encoders->readEncoder(1);
+  e.left = -_encoders->readEncoder(2);
+  e.right = _encoders->readEncoder(1);
   return e;
 }
 
@@ -110,6 +152,8 @@ float DriveTrain::getIRReading(IRLocation loc) {
       return rearIR->distance() / 2.54;
       break;
   }
+
+  return 0;
 }
 
 void DriveTrain::update() {

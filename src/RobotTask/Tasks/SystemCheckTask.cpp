@@ -1,7 +1,7 @@
 #include "SystemCheckTask.hpp"
 
 SystemCheckTask::SystemCheckTask(DriveTrain *driveTrain,
-                                 FanTurret *turret) : super(CALIBRATION) {
+                                 FanTurret *turret) : super(SYSTEM_CHECK) {
   _driveTrain = driveTrain;
   _turret = turret;
 
@@ -31,28 +31,24 @@ void SystemCheckTask::update() {
       _turret->setAngle(0);
       if (_driveTrain->getIRReading(IR_FRONT) < 5) {
         timeLastStateSwitch = currentTime;
-        _driveTrain->resetEncoderCount();
+        _driveTrain->resetIMU();
         state = CS_TURN1;
       }
       break;
 
     case CS_TURN1: {
       _turret->setAngle(90);
-      EncoderCounts e = _driveTrain->getEncoderCount();
-      float leftSpeed = (3200 - abs(e.left)) / 1000.0;
-      float rightSpeed = (3200 - abs(e.right)) / 1000.0;
-      _driveTrain->tankDrive(leftSpeed, -rightSpeed);
-      if ((e.left > 3000) && (e.right < -3000)) {
+      if (_driveTrain->turnDegrees(90, 1)) {
         timeLastStateSwitch = currentTime;
         state = CS_DRIVE2;
         _turret->fanOn();
+        _turret->setAngle(180);
       }
       break;
     }
 
     case CS_DRIVE2:
-      _driveTrain->tankDrive(0.4, 0.4);
-      _turret->setAngle(180);
+      _driveTrain->tankDrive(0.25, 0.25);
       if (_driveTrain->getIRReading(IR_FRONT) < 5) {
         timeLastStateSwitch = currentTime;
         state = CS_FINISHED;
