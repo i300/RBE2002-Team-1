@@ -71,6 +71,31 @@ void DriveTrain::arcadeDrive(float speed, float rotation) {
 }
 
 void DriveTrain::driveStraight(float speed) {
+  unsigned long currentDriveTime = millis();
+
+  if (currentDriveTime > lastDriveUpdate + 1000) {
+    sumDriveError = 0;
+    lastDriveError = 0;
+  }
+
+  IMUReading angle = _imu->getGyroReading();
+  float error = 0 - angle.z;
+  float kP_driving = 0.0075;
+  float kI_driving = 0.0;
+  float kD_driving = 0.005;
+
+  float iPart = sumDriveError;
+  float dPart = error - lastDriveError;
+
+  sumDriveError += error;
+  lastDriveError = error;
+
+  float pidOutput = (error * kP_driving) + (iPart * kI_driving) + (dPart * kD_driving);
+  pidOutput = constrain(pidOutput, -1, 1);
+
+  arcadeDrive(speed, kP_driving * -angle.z);
+
+  lastDriveUpdate = currentDriveTime;
 
 }
 

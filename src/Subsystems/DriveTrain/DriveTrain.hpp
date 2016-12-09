@@ -44,6 +44,11 @@ class DriveTrain {
   float sumTurnError = 0;
   unsigned long lastTurnUpdate = 0;
 
+  // driving variables
+  float lastDriveError = 0;
+  float sumDriveError = 0;
+  unsigned long lastDriveUpdate = 0;
+
   void writeToMotors(float left, float right);
 
 public:
