@@ -27,8 +27,8 @@ void SystemCheckTask::update() {
 
   switch (state) {
     case CS_DRIVE1:
-      _driveTrain->tankDrive(1, 1);
       _turret->setAngle(0);
+      _driveTrain->driveStraight(0.5);
       if (_driveTrain->getIRReading(IR_FRONT) < 5) {
         timeLastStateSwitch = currentTime;
         _driveTrain->resetIMU();
@@ -41,6 +41,7 @@ void SystemCheckTask::update() {
       if (_driveTrain->turnDegrees(90, 1)) {
         timeLastStateSwitch = currentTime;
         state = CS_DRIVE2;
+        _driveTrain->resetIMU();
         _turret->fanOn();
         _turret->setAngle(180);
       }
@@ -48,7 +49,7 @@ void SystemCheckTask::update() {
     }
 
     case CS_DRIVE2:
-      _driveTrain->tankDrive(0.25, 0.25);
+      _driveTrain->driveStraight(0.5);
       if (_driveTrain->getIRReading(IR_FRONT) < 5) {
         timeLastStateSwitch = currentTime;
         state = CS_FINISHED;

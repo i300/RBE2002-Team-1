@@ -31,6 +31,9 @@ LiquidCrystal lcd(40, 41, 42, 43, 44, 45);
 unsigned long lastWriteTime = 0;
 const float lcdFramesPerSecond = 5;
 
+//
+boolean stopped = false;
+
 void setup() {
   Serial.begin(115200);
   Serial.println("Starting...");
@@ -74,6 +77,17 @@ bool8 grabbed = false;
 
 void loop() {
   unsigned long currentTime = millis();
+
+  bool stoppedButton = digitalRead(PIN_SENSOR_STARTBUTTON) == 0;
+  if (stoppedButton) {
+    stopped = true;
+  }
+
+  if (stopped) {
+    driveTrain->stop();
+    driveTrain->update();
+    return;
+  }
 
   // Update Subsystems
   driveTrain->update();

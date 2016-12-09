@@ -80,9 +80,9 @@ void DriveTrain::driveStraight(float speed) {
 
   IMUReading angle = _imu->getGyroReading();
   float error = 0 - angle.z;
-  float kP_driving = 0.0075;
-  float kI_driving = 0.0;
-  float kD_driving = 0.005;
+  float kP_driving = 0.02;
+  float kI_driving = 0;
+  float kD_driving = 0;
 
   float iPart = sumDriveError;
   float dPart = error - lastDriveError;
@@ -93,10 +93,9 @@ void DriveTrain::driveStraight(float speed) {
   float pidOutput = (error * kP_driving) + (iPart * kI_driving) + (dPart * kD_driving);
   pidOutput = constrain(pidOutput, -1, 1);
 
-  arcadeDrive(speed, kP_driving * -angle.z);
+  arcadeDrive(speed, pidOutput);
 
   lastDriveUpdate = currentDriveTime;
-
 }
 
 void DriveTrain::resetIMU() {
