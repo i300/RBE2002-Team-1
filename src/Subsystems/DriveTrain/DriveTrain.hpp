@@ -9,8 +9,8 @@
 #define DRIVETRAIN_H
 
 struct EncoderCounts {
-  long left;
-  long right;
+  float left;
+  float right;
 };
 
 enum IRLocation {
@@ -44,10 +44,28 @@ class DriveTrain {
   float sumTurnError = 0;
   unsigned long lastTurnUpdate = 0;
 
+  const float kP_turning = 0.0075;
+  const float kI_turning = 0.0;
+  const float kD_turning = 0.005;
+
   // driving variables
   float lastDriveError = 0;
-  float sumDriveError = 0;
+  const float encoderConstant = (2.75 * 3.1415926) / 3200.0;
   unsigned long lastDriveUpdate = 0;
+
+  const float kP_driving = 0.02;
+  const float kI_driving = 0;
+  const float kD_driving = 0;
+
+
+  // encoder driving variables
+  unsigned long lastEncoderDriveUpdate = 0;
+  long logLeftEncoder = 0;
+  long logRightEncoder = 0;
+  float sumDriveError = 0;
+
+  const float kP_encoder = 1;
+  const float encoderTolerance = 0.1;
 
   void writeToMotors(float left, float right);
 
@@ -57,10 +75,10 @@ public:
   void arcadeDrive(float speed, float rotation);
   void tankDrive(float left, float right);
 
-  void driveStraight(float speed);
-
   void resetIMU();
-  bool turnDegrees(float deg, int direction);
+  bool turnDegrees(float deg);
+  bool driveEncoderCounts(float targetDistance, float maxSpeed);
+  void driveStraight(float speed);
 
   void resetEncoderCount();
   EncoderCounts getEncoderCount();

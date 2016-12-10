@@ -38,7 +38,7 @@ void SystemCheckTask::update() {
 
     case CS_TURN1: {
       _turret->setAngle(90);
-      if (_driveTrain->turnDegrees(90, 1)) {
+      if (_driveTrain->turnDegrees(90)) {
         timeLastStateSwitch = currentTime;
         state = CS_DRIVE2;
         _driveTrain->resetIMU();

@@ -16,6 +16,8 @@
 #include "RobotTask/Tasks/SystemCheckTask.hpp"
 #include "RobotTask/Tasks/FollowWallTask.hpp"
 
+#define DEBUG 1
+
 // Subsystems
 DriveTrain *driveTrain;
 FanTurret *turret;
@@ -55,7 +57,7 @@ void setup() {
 
   driveTrain = new DriveTrain(left, right, encoders, imu,
                               PIN_SENSOR_IR_FRONT, PIN_SENSOR_IR_SIDE, PIN_SENSOR_IR_BACK);
-  turret = new FanTurret(PIN_SERVO_FAN, PIN_FAN);
+  turret = new FanTurret(PIN_SERVO_FAN, PIN_FAN, PIN_SENSOR_CANDLE_SENSOR);
 
   lcd.clear();
   lcd.print("Waiting to start");
@@ -65,11 +67,13 @@ void setup() {
     delay(10); // wait to start
   }
 
+  delay(250);
+
   lcd.clear();
 
   // Start task state-machine at the correct task
-  //currentTask = new FollowWallTask(driveTrain, turret);
-  currentTask = new SystemCheckTask(driveTrain, turret);
+  currentTask = new FollowWallTask(driveTrain, turret);
+  //currentTask = new SystemCheckTask(driveTrain, turret);
 }
 
 long nextTime = millis() + 2500;
@@ -86,6 +90,11 @@ void loop() {
   if (stopped) {
     driveTrain->stop();
     driveTrain->update();
+
+    lcd.setCursor(0, 0);
+    lcd.clear();
+    lcd.print("E-STOP");
+    delay(10);
     return;
   }
 
@@ -119,14 +128,19 @@ void loop() {
   if (currentTime > lastWriteTime + msPerFrame) {
     lcd.clear();
 
-    #ifndef DEBUG
+    #ifdef DEBUG
       lcd.setCursor(0, 0);
       //EncoderCounts e = driveTrain->getEncoderCount();
       //lcd.print("L: "); lcd.print(e.left);
       //lcd.setCursor(0, 1);
       //lcd.print("R: "); lcd.print(e.right);
-      //lcd.print("IR: "); lcd.print(driveTrain->getIRReading(IR_SIDE));
-      lcd.print("IMU: "); lcd.print(imu->getGyroReading().z);
+      //lcd.print("IR_F: "); lcd.print(driveTrain->getIRReading(IR_FRONT));
+      //lcd.setCursor(0, 1);
+      //lcd.print("IR_S: "); lcd.print(driveTrain->getIRReading(IR_SIDE));
+      //lcd.print("IMU: "); lcd.print(imu->getGyroReading().z);
+      lcd.print("S:" + String(currentTask->getState()));
+      lcd.setCursor(0, 1);
+      lcd.print("Candle: " + String(analogRead(PIN_SENSOR_CANDLE_SENSOR)));
     #else
       lcd.setCursor(0, 1);
     #endif

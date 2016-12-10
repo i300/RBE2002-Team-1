@@ -7,16 +7,22 @@
 
 class FanTurret {
   Servo fanServo;
-  int servoAngle;
+  float servoAngle;
+  unsigned long lastSweepUpdateTime = 0;
+  bool sweepUp = true;
+  int sweepTime = 0;
 
   uint8 fanPin;
+  uint8 candleSensorPin;
 
 public:
-  FanTurret(uint8 pinServo, uint8 pinFan);
+  FanTurret(uint8 pinServo, uint8 pinFan, uint8 candlePin);
 
-  void setAngle(int angle);
-  void changeAngle(int dAngle);
-  void sweepServo();
+  void setAngle(float angle);
+  void changeAngle(float dAngle);
+  void sweep();
+
+  bool canSeeCandle();
 
   void fanOn();
   void fanOff();

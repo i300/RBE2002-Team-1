@@ -25,4 +25,6 @@ static const uint8 PIN_SENSOR_IR_FRONT = A10;
 static const uint8 PIN_SENSOR_IR_SIDE = A11;
 static const uint8 PIN_SENSOR_IR_BACK = A0;
 
+static const uint8 PIN_SENSOR_CANDLE_SENSOR = A1;
+
 #endif

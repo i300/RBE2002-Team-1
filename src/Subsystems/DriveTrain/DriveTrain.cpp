@@ -80,9 +80,6 @@ void DriveTrain::driveStraight(float speed) {
 
   IMUReading angle = _imu->getGyroReading();
   float error = 0 - angle.z;
-  float kP_driving = 0.02;
-  float kI_driving = 0;
-  float kD_driving = 0;
 
   float iPart = sumDriveError;
   float dPart = error - lastDriveError;
@@ -98,12 +95,38 @@ void DriveTrain::driveStraight(float speed) {
   lastDriveUpdate = currentDriveTime;
 }
 
+bool DriveTrain::driveEncoderCounts(float targetDistance, float maxSpeed) {
+  unsigned long currentTime = millis();
+  EncoderCounts e = getEncoderCount();
+
+  if (currentTime > lastEncoderDriveUpdate + 1000) {
+    logLeftEncoder = e.left;
+    logRightEncoder = e.right;
+  }
+
+  float currentDistance = (e.left + e.right) / 2.0;
+
+  targetDistance += (logLeftEncoder + logRightEncoder) / 2.0;
+
+  float error = targetDistance - currentDistance;
+
+  error = constrain(error, -1, 1);
+
+  Serial.println("Error: " + String(error));
+
+  tankDrive(maxSpeed * error * kP_encoder, maxSpeed * error * kP_encoder);
+
+  lastEncoderDriveUpdate = currentTime;
+
+  return (error < encoderTolerance);
+}
+
 void DriveTrain::resetIMU() {
   _imu->clear();
 }
 
 // Direction: 1 is cw, -1 is ccw
-bool DriveTrain::turnDegrees(float deg, int direction) {
+bool DriveTrain::turnDegrees(float deg) {
   unsigned long currentTime = millis();
 
   if (currentTime > lastTurnUpdate + 1000) {
@@ -113,9 +136,6 @@ bool DriveTrain::turnDegrees(float deg, int direction) {
 
   IMUReading r = _imu->getGyroReading();
   float error = deg - r.z;
-  float kP_turning = 0.0075;
-  float kI_turning = 0.0;
-  float kD_turning = 0.005;
 
   float iPart = sumTurnError;
   float dPart = error - lastTurnError;
@@ -126,13 +146,15 @@ bool DriveTrain::turnDegrees(float deg, int direction) {
   float pidOutput = (error * kP_turning) + (iPart * kI_turning) + (dPart * kD_turning);
   pidOutput = constrain(pidOutput, -1, 1);
 
+  Serial.println("TD Er: " + String(error));
+
   float turnSpeed = 1;
 
-  tankDrive(turnSpeed * pidOutput * -direction, turnSpeed * pidOutput * direction);
+  tankDrive(-turnSpeed * pidOutput, turnSpeed * pidOutput );
 
   lastTurnUpdate = currentTime;
 
-  return (error < 10) && (dPart < 0.1);
+  return (abs(error) < 10) && (abs(dPart) < 0.1);
 }
 
 /* tankDrive - void
@@ -157,8 +179,8 @@ void DriveTrain::resetEncoderCount() {
 
 EncoderCounts DriveTrain::getEncoderCount() {
   EncoderCounts e = {0};
-  e.left = -_encoders->readEncoder(2);
-  e.right = _encoders->readEncoder(1);
+  e.left = -_encoders->readEncoder(2) * encoderConstant;
+  e.right = _encoders->readEncoder(1) * encoderConstant;
   return e;
 }
 
@@ -198,4 +220,6 @@ void DriveTrain::update() {
 void DriveTrain::stop() {
   leftSetpoint = 0;
   rightSetpoint = 0;
+  rightSpeed = 0;
+  leftSpeed = 0;
 }

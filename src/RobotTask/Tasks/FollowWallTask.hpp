@@ -11,6 +11,9 @@ enum FollowWallState {
   FW_Turn90,
   FW_SeenGap,
   FW_TurnAroundWall,
+  FW_DriveThroughGap,
+  FW_TurnTowardWall,
+  FW_ReFindWall,
   FW_SeenCandleBase
 };
 

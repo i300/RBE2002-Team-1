@@ -12,9 +12,11 @@
 
 enum RobotTaskType {
   NO_TASK,
+  TASK_UNDEFINED,
   SYSTEM_CHECK,
   CALIBRATION,
-  FOLLOW_WALL
+  FOLLOW_WALL,
+  DRIVE_TO_CANDLE
 };
 
 class RobotTask {
