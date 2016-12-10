@@ -112,8 +112,6 @@ bool DriveTrain::driveEncoderCounts(float targetDistance, float maxSpeed) {
 
   error = constrain(error, -1, 1);
 
-  Serial.println("Error: " + String(error));
-
   tankDrive(maxSpeed * error * kP_encoder, maxSpeed * error * kP_encoder);
 
   lastEncoderDriveUpdate = currentTime;

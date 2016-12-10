@@ -3,7 +3,7 @@
 /* constructor -
  */
 RobotTask::RobotTask() {
-  _type = NO_TASK;
+  _type = TASK_UNDEFINED;
   _timeStarted = millis();
 }
 

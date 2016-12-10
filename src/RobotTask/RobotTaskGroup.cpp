@@ -14,14 +14,21 @@ void RobotTaskGroup::add(RobotTask *task) {
 }
 
 void RobotTaskGroup::update() {
-  if (tasks[currentTaskIndex]->isFinished()) {
-    currentTaskIndex++;
+  RobotTask::update();
+
+  Serial.println("Task #: " + String(currentTaskIndex));
+
+  if (currentTaskIndex < numTasks) {
+    tasks[currentTaskIndex]->update();
   }
 
-  tasks[currentTaskIndex]->update();
+  if (tasks[currentTaskIndex]->isFinished()) {
+    Serial.println(String(currentTaskIndex) + " Finished");
+    currentTaskIndex++;
+  }
 }
 
-void finished() {
+void RobotTaskGroup::finished() {
 
 }
 

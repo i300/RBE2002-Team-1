@@ -14,7 +14,7 @@ FollowWallTask::FollowWallTask(DriveTrain *driveTrain,
  * returns true when the task is finished
  */
 bool8 FollowWallTask::isFinished() {
-  return false; //(state == FW_SeenCandleBase);
+  return (state == FW_SeenCandleBase);
 }
 
 /* update - void

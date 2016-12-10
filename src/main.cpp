@@ -14,7 +14,7 @@
 
 #include "RobotTask/RobotTask.hpp"
 #include "RobotTask/Tasks/SystemCheckTask.hpp"
-#include "RobotTask/Tasks/FollowWallTask.hpp"
+#include "RobotTask/Tasks/MainTaskGroup.hpp"
 
 #define DEBUG 1
 
@@ -26,7 +26,7 @@ FanTurret *turret;
 IMU *imu;
 
 // Task stuff
-RobotTask *currentTask;
+MainTaskGroup *task;
 
 // LCD
 LiquidCrystal lcd(40, 41, 42, 43, 44, 45);
@@ -71,8 +71,8 @@ void setup() {
 
   lcd.clear();
 
-  // Start task state-machine at the correct task
-  currentTask = new FollowWallTask(driveTrain, turret);
+  task = new MainTaskGroup(driveTrain, turret);
+  //currentTask = new FollowWallTask(driveTrain, turret);
   //currentTask = new SystemCheckTask(driveTrain, turret);
 }
 
@@ -103,25 +103,7 @@ void loop() {
   imu->update();
 
   // Update current task
-  currentTask->update();
-
-  // Update state machine if task is finished
-  RobotTaskType taskType = currentTask->getType();
-  if (currentTask->isFinished()) {
-    // Delete old task off the heap
-    delete currentTask;
-
-    switch (taskType) {
-
-      case NO_TASK:
-        // Nothing to see here...
-        break;
-
-      default:
-        //currentTask = new RobotTask();
-        break;
-    }
-  }
+  task->update();
 
   // Write to LCD
   float msPerFrame = (1000.0 / lcdFramesPerSecond); // 1000 * (1/FPS)
@@ -138,7 +120,6 @@ void loop() {
       //lcd.setCursor(0, 1);
       //lcd.print("IR_S: "); lcd.print(driveTrain->getIRReading(IR_SIDE));
       //lcd.print("IMU: "); lcd.print(imu->getGyroReading().z);
-      lcd.print("S:" + String(currentTask->getState()));
       lcd.setCursor(0, 1);
       lcd.print("Candle: " + String(analogRead(PIN_SENSOR_CANDLE_SENSOR)));
     #else
