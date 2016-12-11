@@ -13,6 +13,9 @@ protected:
   DriveTrain *_driveTrain;
   float _distance;
 
+  EncoderCounts initialE;
+
+  void init();
   void finished();
 
 public:

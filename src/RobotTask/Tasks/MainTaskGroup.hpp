@@ -7,6 +7,12 @@
 #define MainTaskGroup_H
 
 class MainTaskGroup : public RobotTaskGroup {
+protected:
+  DriveTrain *_driveTrain;
+  FanTurret *_turret;
+
+  void finished();
+
 public:
   MainTaskGroup(DriveTrain *driveTrain, FanTurret *turret);
 };

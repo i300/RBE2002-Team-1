@@ -144,8 +144,6 @@ bool DriveTrain::turnDegrees(float deg) {
   float pidOutput = (error * kP_turning) + (iPart * kI_turning) + (dPart * kD_turning);
   pidOutput = constrain(pidOutput, -1, 1);
 
-  Serial.println("TD Er: " + String(error));
-
   float turnSpeed = 1;
 
   tankDrive(-turnSpeed * pidOutput, turnSpeed * pidOutput );

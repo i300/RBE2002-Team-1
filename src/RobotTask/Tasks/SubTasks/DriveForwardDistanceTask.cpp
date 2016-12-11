@@ -9,7 +9,10 @@ DriveForwardDistanceTask::DriveForwardDistanceTask(DriveTrain *driveTrain, float
  * returns true when the task is finished
  */
 bool8 DriveForwardDistanceTask::isFinished() {
-  return _driveTrain->driveEncoderCounts(_distance, 0.35);
+  EncoderCounts e = _driveTrain->getEncoderCount();
+  float dist = (e.left + e.right) / 2.0;
+  float initialD = (initialE.left + initialE.right) / 2.0;
+  return (dist - initialD) >= _distance;
 }
 
 /* update - void
@@ -17,10 +20,20 @@ bool8 DriveForwardDistanceTask::isFinished() {
  */
 void DriveForwardDistanceTask::update() {
   super::update();
+
+  _driveTrain->driveStraight(0.35);
 }
+
+void DriveForwardDistanceTask::init() {
+  Serial.println("Init DriveForwardDistanceTask");
+  _driveTrain->resetIMU();
+  initialE = _driveTrain->getEncoderCount();
+}
+
 /* finished - void
  * Called once the task is finished. Cleans up the finished task
  */
 void DriveForwardDistanceTask::finished() {
-
+  Serial.println("Finished DriveForwardDistanceTask");
+  _driveTrain->stop();
 }

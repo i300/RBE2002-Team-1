@@ -2,10 +2,14 @@
 
 RobotTaskGroup::RobotTaskGroup() {
   numTasks = 0;
+
+  for (int i = 0; i < TASK_LIST_SIZE; i++) {
+    tasks[i] = 0;
+  }
 }
 
 bool8 RobotTaskGroup::isFinished() {
-  return (currentTaskIndex + 1) == numTasks;
+  return (currentTaskIndex == numTasks);
 }
 
 void RobotTaskGroup::add(RobotTask *task) {
@@ -14,28 +18,20 @@ void RobotTaskGroup::add(RobotTask *task) {
 }
 
 void RobotTaskGroup::update() {
-  RobotTask::update();
+  if (tasks[currentTaskIndex]->isFinished()) {
+    Serial.println(String(currentTaskIndex) + " Finished");
+    delete tasks[currentTaskIndex];
+    tasks[currentTaskIndex] = 0;
+    currentTaskIndex++;
+  }
 
-  Serial.println("Task #: " + String(currentTaskIndex));
-
-  if (currentTaskIndex < numTasks) {
+  if (tasks[currentTaskIndex]) {
     tasks[currentTaskIndex]->update();
   }
 
-  if (tasks[currentTaskIndex]->isFinished()) {
-    Serial.println(String(currentTaskIndex) + " Finished");
-    currentTaskIndex++;
-  }
-}
-
-void RobotTaskGroup::finished() {
-
+  RobotTask::update();
 }
 
 RobotTaskGroup::~RobotTaskGroup() {
-  for (int i = 0; i < TASK_LIST_SIZE; i++) {
-    if (tasks[i] != nullptr) {
-      delete tasks[i];
-    }
-  }
+
 }

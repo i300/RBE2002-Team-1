@@ -103,7 +103,14 @@ void loop() {
   imu->update();
 
   // Update current task
-  task->update();
+  if (task) {
+    task->update();
+
+    if (task->isFinished()) {
+      delete task;
+      task = 0;
+    }
+  }
 
   // Write to LCD
   float msPerFrame = (1000.0 / lcdFramesPerSecond); // 1000 * (1/FPS)
@@ -120,7 +127,7 @@ void loop() {
       //lcd.setCursor(0, 1);
       //lcd.print("IR_S: "); lcd.print(driveTrain->getIRReading(IR_SIDE));
       //lcd.print("IMU: "); lcd.print(imu->getGyroReading().z);
-      lcd.setCursor(0, 1);
+      //lcd.setCursor(0, 1);
       lcd.print("Candle: " + String(analogRead(PIN_SENSOR_CANDLE_SENSOR)));
     #else
       lcd.setCursor(0, 1);

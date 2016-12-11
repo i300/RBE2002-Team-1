@@ -107,7 +107,7 @@ void FollowWallTask::update() {
       break;
 
     case FW_ReFindWall:
-      if (_driveTrain->driveEncoderCounts(12, 0.4)) {
+      if (_driveTrain->driveEncoderCounts(16, 0.4)) {
         timeLastStateSwitch = currentTime;
         state = FW_FollowWall;
       }

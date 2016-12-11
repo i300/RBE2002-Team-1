@@ -2,22 +2,22 @@
 #include "../../../Subsystems/DriveTrain/DriveTrain.hpp"
 #include "../../RobotTask.hpp"
 
-#ifndef TurnDegrees_H
-#define TurnDegrees_H
+#ifndef DriveForwardToIRDistance_H
+#define DriveForwardToIRDistance_H
 
-class TurnDegreesTask : public RobotTask {
+class DriveForwardToIRDistanceTask : public RobotTask {
 private:
   typedef RobotTask super;
 
 protected:
   DriveTrain *_driveTrain;
-  float _degrees;
+  float _distance;
 
   void init();
   void finished();
 
 public:
-  TurnDegreesTask(DriveTrain *driveTrain, float degrees);
+  DriveForwardToIRDistanceTask(DriveTrain *driveTrain, float distance);
 
   bool8 isFinished();
   void update();

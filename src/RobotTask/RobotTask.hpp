@@ -25,11 +25,13 @@ protected:
   RobotTaskType _type;
 
   bool8 _finished;
+  bool8 _initialized;
 
   unsigned long _timeStarted;
   unsigned long getTimeStarted();
 
-  virtual void finished();
+  virtual void init() {};
+  virtual void finished() {};
 
 public:
   RobotTask();

@@ -5,6 +5,9 @@
 RobotTask::RobotTask() {
   _type = TASK_UNDEFINED;
   _timeStarted = millis();
+
+  _finished = false;
+  _initialized = false;
 }
 
 /* constructor -
@@ -12,6 +15,10 @@ RobotTask::RobotTask() {
  */
 RobotTask::RobotTask(RobotTaskType type) {
   _type = type;
+  _timeStarted = millis();
+
+  _finished = false;
+  _initialized = false;
 }
 
 /* getTimeStarted - unsigned long timeStarted
@@ -35,18 +42,16 @@ bool8 RobotTask::isFinished() {
   return true;
 }
 
-/* finished - void
- * Called once the task is finished. Cleans up the finished task.
- */
-void RobotTask::finished() {
-
-}
-
 /* update - void
  * Updates the robot based on the current task. When the task is finished,
  * calls finished() once.
  */
 void RobotTask::update() {
+  if (!_initialized) {
+    init();
+    _initialized = true;
+  }
+
   if (isFinished() && !_finished) {
     finished();
     _finished = true;

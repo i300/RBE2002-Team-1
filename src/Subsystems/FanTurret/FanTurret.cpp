@@ -30,7 +30,7 @@ void FanTurret::sweep() {
 
   unsigned long dt = currentTime - lastSweepUpdateTime; // dt in milliseconds
 
-  float dAngle = dt * (180.0  / 750.0); // dt * (180 deg / 2000 ms)
+  float dAngle = dt * (180.0  / 400.0); // dt * (180 deg / 400 ms)
 
   if (servoAngle >= 180) {
     sweepUp = false;
@@ -43,8 +43,16 @@ void FanTurret::sweep() {
   changeAngle(sweepUp ? dAngle : -dAngle);
 }
 
+int FanTurret::getCandleValue() {
+  return analogRead(candleSensorPin);
+}
+
 bool FanTurret::canSeeCandle() {
-  return (analogRead(candleSensorPin) < 700);
+  return (getCandleValue() < 600);
+}
+
+bool FanTurret::pointingAtCandle() {
+  return (getCandleValue() < 250);
 }
 
 void FanTurret::fanOn() {

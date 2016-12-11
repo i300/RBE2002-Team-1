@@ -14,7 +14,8 @@ class RobotTaskGroup : public RobotTask {
   int numTasks = 0;
 
 protected:
-  void finished();
+  virtual void init() {};
+  virtual void finished() {};
 
 public:
   RobotTaskGroup();

@@ -22,7 +22,10 @@ public:
   void changeAngle(float dAngle);
   void sweep();
 
+  int getCandleValue();
+
   bool canSeeCandle();
+  bool pointingAtCandle();
 
   void fanOn();
   void fanOff();

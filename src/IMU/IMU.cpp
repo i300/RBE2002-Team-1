@@ -145,9 +145,9 @@ void IMU::clear() {
 
 IMUReading IMU::getGyroReading() {
   IMUReading reading = {0};
-  reading.x = gyro_x; Serial.print("X: " + String(gyro_x));
-  reading.y = gyro_y; Serial.print(" Y: " + String(gyro_y));
-  reading.z = gyro_z; Serial.println(" Z: " + String(gyro_z));
+  reading.x = gyro_x;
+  reading.y = gyro_y;
+  reading.z = gyro_z;
   return reading;
 }
 
