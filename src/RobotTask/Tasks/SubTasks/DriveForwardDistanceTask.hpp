@@ -12,6 +12,7 @@ private:
 protected:
   DriveTrain *_driveTrain;
   float _distance;
+  float _speed;
 
   EncoderCounts initialE;
 
@@ -19,7 +20,7 @@ protected:
   void finished();
 
 public:
-  DriveForwardDistanceTask(DriveTrain *driveTrain, float distance);
+  DriveForwardDistanceTask(DriveTrain *driveTrain, float distance, float maxSpeed);
 
   bool8 isFinished();
   void update();

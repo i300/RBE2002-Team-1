@@ -1,8 +1,9 @@
 #include "DriveForwardDistanceTask.hpp"
 
-DriveForwardDistanceTask::DriveForwardDistanceTask(DriveTrain *driveTrain, float distance) : super(TASK_UNDEFINED) {
+DriveForwardDistanceTask::DriveForwardDistanceTask(DriveTrain *driveTrain, float distance, float maxSpeed) : super(TASK_UNDEFINED) {
   _driveTrain = driveTrain;
   _distance = distance;
+  _speed = maxSpeed;
 }
 
 /* isFinished - bool8
@@ -21,7 +22,7 @@ bool8 DriveForwardDistanceTask::isFinished() {
 void DriveForwardDistanceTask::update() {
   super::update();
 
-  _driveTrain->driveStraight(0.35);
+  _driveTrain->driveStraight(_speed);
 }
 
 void DriveForwardDistanceTask::init() {

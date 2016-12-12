@@ -55,7 +55,7 @@ void FollowWallTask::update() {
         state = FW_SeenGap;
       }
 
-      if (frontDistance < 7) {
+      if (frontDistance < 8) {
         timeLastStateSwitch = currentTime;
         _driveTrain->resetIMU();
         state = FW_Turn90;
@@ -81,7 +81,7 @@ void FollowWallTask::update() {
       break;
 
     case FW_TurnAroundWall:
-      if (_driveTrain->turnDegrees(-90)) {
+      if (_driveTrain->turnDegrees(-95)) {
         timeLastStateSwitch = currentTime;
         state = FW_DriveThroughGap;
         _driveTrain->stop();
@@ -90,7 +90,7 @@ void FollowWallTask::update() {
       break;
 
     case FW_DriveThroughGap:
-      if (_driveTrain->driveEncoderCounts(24, 0.4)) {
+      if (_driveTrain->driveEncoderCounts(28, 0.4)) {
         timeLastStateSwitch = currentTime;
         state = FW_TurnTowardWall;
         _driveTrain->resetIMU();
@@ -98,7 +98,7 @@ void FollowWallTask::update() {
       break;
 
     case FW_TurnTowardWall:
-      if (_driveTrain->turnDegrees(-90)) {
+      if (_driveTrain->turnDegrees(-98)) {
         timeLastStateSwitch = currentTime;
         state = FW_ReFindWall;
         _driveTrain->stop();

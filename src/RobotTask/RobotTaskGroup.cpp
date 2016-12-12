@@ -1,6 +1,6 @@
 #include "RobotTaskGroup.hpp"
 
-RobotTaskGroup::RobotTaskGroup() {
+RobotTaskGroup::RobotTaskGroup() : RobotTask(TASK_COMMANDGROUP) {
   numTasks = 0;
 
   for (int i = 0; i < TASK_LIST_SIZE; i++) {

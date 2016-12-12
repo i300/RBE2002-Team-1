@@ -90,6 +90,7 @@ void loop() {
   if (stopped) {
     driveTrain->stop();
     driveTrain->update();
+    turret->fanOff();
 
     lcd.setCursor(0, 0);
     lcd.clear();
@@ -123,12 +124,12 @@ void loop() {
       //lcd.print("L: "); lcd.print(e.left);
       //lcd.setCursor(0, 1);
       //lcd.print("R: "); lcd.print(e.right);
-      //lcd.print("IR_F: "); lcd.print(driveTrain->getIRReading(IR_FRONT));
-      //lcd.setCursor(0, 1);
-      //lcd.print("IR_S: "); lcd.print(driveTrain->getIRReading(IR_SIDE));
+      lcd.print("IR_F: "); lcd.print(driveTrain->getIRReading(IR_FRONT));
+      lcd.setCursor(0, 1);
+      lcd.print("IR_S: "); lcd.print(driveTrain->getIRReading(IR_SIDE));
       //lcd.print("IMU: "); lcd.print(imu->getGyroReading().z);
       //lcd.setCursor(0, 1);
-      lcd.print("Candle: " + String(analogRead(PIN_SENSOR_CANDLE_SENSOR)));
+      //lcd.print("Candle: " + String(analogRead(PIN_SENSOR_CANDLE_SENSOR)));
     #else
       lcd.setCursor(0, 1);
     #endif
