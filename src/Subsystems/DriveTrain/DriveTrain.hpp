@@ -13,6 +13,12 @@ struct EncoderCounts {
   float right;
 };
 
+struct RobotPosition {
+  float x;
+  float y;
+  float theta;
+};
+
 enum IRLocation {
   IR_FRONT,
   IR_SIDE,
@@ -39,6 +45,11 @@ class DriveTrain {
   float rightSpeed = 0;
   float rightSetpoint = 0;
 
+  // Localization Variables
+  EncoderCounts lastE = {0};
+  RobotPosition pos = {0};
+  unsigned long lastLocalizatonUpdate = 0;
+
   // turning variables
   float lastTurnError = 0;
   float sumTurnError = 0;
@@ -56,7 +67,6 @@ class DriveTrain {
   const float kP_driving = 0.02;
   const float kI_driving = 0;
   const float kD_driving = 0;
-
 
   // encoder driving variables
   unsigned long lastEncoderDriveUpdate = 0;
@@ -84,6 +94,9 @@ public:
   EncoderCounts getEncoderCount();
 
   float getIRReading(IRLocation loc);
+
+  void localize();
+  RobotPosition getRobotPosition();
 
   void update();
   void stop();

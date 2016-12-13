@@ -1,4 +1,5 @@
 #include "DriveTrain.hpp"
+#include "../../RobotMap.h"
 
 /* constructor
  *
@@ -16,6 +17,10 @@
   frontIR = new SharpIR(frontIRPin, 1080);
   sideIR = new SharpIR(sideIRPin, 1080);
   rearIR = new SharpIR(rearIRPin, 1080);
+
+  lastE = {0};
+  pos = {0};
+  lastLocalizatonUpdate = 0;
 
   writeToMotors(0, 0);
 }
@@ -198,13 +203,48 @@ float DriveTrain::getIRReading(IRLocation loc) {
   return 0;
 }
 
+void DriveTrain::localize() {
+  EncoderCounts currentE = getEncoderCount();
+
+  EncoderCounts de;
+  de.left = currentE.left - lastE.left;
+  de.right = currentE.right - lastE.right;
+
+  float ds = (de.right + de.left) / 2.0;
+  float dTheta = (de.right - de.left) / ROBOT_DRIVE_TRACK;
+
+  float dx = ds * cos(pos.theta + (dTheta / 2.0));
+  float dy = ds * sin(pos.theta + (dTheta / 2.0));
+
+  pos.x += dx;
+  pos.y += dy;
+  pos.theta += dTheta;
+
+  lastE.left = currentE.left;
+  lastE.right = currentE.right;
+}
+
+RobotPosition DriveTrain::getRobotPosition() {
+  RobotPosition p = {0};
+
+  return p;
+}
+
 void DriveTrain::update() {
+  unsigned long currentTime = millis();
+
   if (ramping) {
     leftSpeed += (leftSetpoint - leftSpeed) * kP_ramping;
     rightSpeed += (rightSetpoint - rightSpeed) * kP_ramping;
   } else {
     leftSpeed = leftSetpoint;
     rightSpeed = rightSetpoint;
+  }
+
+  if (currentTime > lastLocalizatonUpdate + 10) {
+    localize();
+
+    lastLocalizatonUpdate = currentTime;
   }
 
   writeToMotors(leftSpeed, rightSpeed);
