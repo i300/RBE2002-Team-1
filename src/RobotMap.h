@@ -5,9 +5,10 @@
 
 /* GLOBAL */
 static const uint8 ROBOT_ID = 1;
+static const float ROBOT_DRIVE_TRACK = (4.63*2);
 
 /* FAN */
-static const uint8 PIN_SERVO_FAN = 11;
+static const uint8 PIN_SERVO_FAN = 6;
 static const uint8 PIN_FAN = 18;
 
 /* DRIVE TRAIN */

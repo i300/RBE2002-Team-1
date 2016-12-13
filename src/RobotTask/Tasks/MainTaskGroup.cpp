@@ -12,6 +12,7 @@ MainTaskGroup::MainTaskGroup(DriveTrain *driveTrain, FanTurret *turret) : RobotT
 
   add(new FollowWallTask(driveTrain, turret));
   add(new DriveToCandleTask(driveTrain, turret));
+  //add(new DriveForwardDistanceTask(driveTrain, 12, 0.35));
 }
 
 void MainTaskGroup::finished() {

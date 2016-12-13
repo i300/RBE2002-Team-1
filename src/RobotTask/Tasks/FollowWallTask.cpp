@@ -90,7 +90,7 @@ void FollowWallTask::update() {
       break;
 
     case FW_DriveThroughGap:
-      if (_driveTrain->driveEncoderCounts(28, 0.4)) {
+      if (_driveTrain->driveEncoderCounts(26, 0.4)) {
         timeLastStateSwitch = currentTime;
         state = FW_TurnTowardWall;
         _driveTrain->resetIMU();

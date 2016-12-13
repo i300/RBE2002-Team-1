@@ -48,7 +48,7 @@ int FanTurret::getCandleValue() {
 }
 
 bool FanTurret::canSeeCandle() {
-  return (getCandleValue() < 600);
+  return (getCandleValue() < 700);
 }
 
 bool FanTurret::pointingAtCandle() {
