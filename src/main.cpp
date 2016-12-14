@@ -58,7 +58,7 @@ void setup() {
 
   driveTrain = new DriveTrain(left, right, encoders, imu,
                               PIN_SENSOR_IR_FRONT, PIN_SENSOR_IR_SIDE, PIN_SENSOR_IR_BACK);
-  turret = new FanTurret(PIN_SERVO_FAN, PIN_FAN, PIN_SENSOR_CANDLE_SENSOR);
+  turret = new FanTurret(PIN_SERVO_FAN, PIN_FAN, PIN_SENSOR_CANDLE_SENSOR, PIN_LED_CANDLE_FOUND, PIN_LED_CANDLE_OUT);
 
   lcd.clear();
   lcd.print("Waiting to start");
@@ -120,7 +120,7 @@ void loop() {
   if (currentTime > lastWriteTime + msPerFrame) {
     lcd.clear();
 
-    #ifdef DEBUG
+    #ifndef DEBUG
       lcd.setCursor(0, 0);
       //EncoderCounts e = driveTrain->getEncoderCount();
       //lcd.print("L: "); lcd.print(e.left);
@@ -132,12 +132,15 @@ void loop() {
       //lcd.print("IMU: "); lcd.print(imu->getGyroReading().z);
       //lcd.setCursor(0, 1);
       //lcd.print("Candle: " + String(analogRead(PIN_SENSOR_CANDLE_SENSOR)));
-      RobotPosition p = driveTrain->getRobotPosition();
-      lcd.print("x: " + String(p.x));
-      lcd.setCursor(0, 1);
-      lcd.print("y: " + String(p.y));
     #else
+    RobotPosition p = driveTrain->getRecordedPosition();
+    if ((p.x == 0) && (p.y == 0)) { // Position not set
+      lcd.print("Finding Candle");
+    } else {
+      lcd.print("(" + String(p.x) + ", " + String(p.y) + ")");
       lcd.setCursor(0, 1);
+      lcd.print("z: 0");
+    }
     #endif
 
     lastWriteTime = currentTime;

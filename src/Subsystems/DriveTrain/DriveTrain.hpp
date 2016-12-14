@@ -48,6 +48,7 @@ class DriveTrain {
   // Localization Variables
   EncoderCounts lastE = {0};
   RobotPosition pos = {0};
+  RobotPosition recordedPosition = {0};
   unsigned long lastLocalizatonUpdate = 0;
 
   // turning variables
@@ -96,6 +97,8 @@ public:
   float getIRReading(IRLocation loc);
 
   void localize();
+  RobotPosition getRecordedPosition();
+  RobotPosition recordPosition();
   RobotPosition getRobotPosition();
 
   void update();

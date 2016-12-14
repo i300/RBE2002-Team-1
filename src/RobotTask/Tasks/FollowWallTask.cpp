@@ -1,9 +1,10 @@
 #include "FollowWallTask.hpp"
 
 FollowWallTask::FollowWallTask(DriveTrain *driveTrain,
-                                 FanTurret *turret) : super(FOLLOW_WALL) {
+                                 FanTurret *turret, bool returnHome) : super(FOLLOW_WALL) {
   _driveTrain = driveTrain;
   _turret = turret;
+  _returnHome = returnHome;
 
   timeLastStateSwitch = millis();
 
@@ -14,7 +15,12 @@ FollowWallTask::FollowWallTask(DriveTrain *driveTrain,
  * returns true when the task is finished
  */
 bool8 FollowWallTask::isFinished() {
-  return (state == FW_SeenCandleBase);
+  if (_returnHome) {
+    RobotPosition pos = _driveTrain->getRobotPosition();
+    return sqrt((pos.x*pos.x) + (pos.y*pos.y)) < HOME_THRESHOLD;
+  } else {
+    return (state == FW_SeenCandleBase);
+  }
 }
 
 /* update - void
@@ -25,7 +31,7 @@ void FollowWallTask::update() {
 
   unsigned long currentTime = millis();
 
-  _turret->sweep();
+  if (!_returnHome) _turret->sweep();
 
   switch (state) {
     case FW_FollowWall: {
@@ -37,7 +43,8 @@ void FollowWallTask::update() {
         forwardSpeed = 0.25;
       }
 
-      if (_turret->canSeeCandle()) {
+      if (_turret->canSeeCandle() && !_returnHome) {
+        _turret->setCandleFound();
         state = FW_SeenCandleBase;
       }
 
@@ -126,6 +133,14 @@ void FollowWallTask::update() {
 int FollowWallTask::getState() {
   return state;
 }
+
+/* init - void
+ * Called once the task is started
+ */
+void FollowWallTask::init() {
+  _driveTrain->resetIMU();
+}
+
 
 /* finished - void
  * Called once the task is finished. Cleans up the finished task

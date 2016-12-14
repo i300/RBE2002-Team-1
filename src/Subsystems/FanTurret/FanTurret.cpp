@@ -1,7 +1,10 @@
 #include "FanTurret.hpp"
 
-FanTurret::FanTurret(uint8 pinServo, uint8 pinFan, uint8 candlePin) {
+FanTurret::FanTurret(uint8 pinServo, uint8 pinFan, uint8 candlePin, uint8 candleFoundPin, uint8 candleOutPin) {
   fanServo.attach(pinServo);
+
+  _candleFoundPin = candleFoundPin;
+  _candleOutPin = candleOutPin;
 
   fanPin = pinFan;
   candleSensorPin = candlePin;
@@ -9,6 +12,10 @@ FanTurret::FanTurret(uint8 pinServo, uint8 pinFan, uint8 candlePin) {
   setAngle(0);
 
   pinMode(fanPin, OUTPUT);
+  pinMode(candleOutPin, OUTPUT);
+  pinMode(candleFoundPin, OUTPUT);
+  digitalWrite(candleOutPin, LOW);
+  digitalWrite(candleFoundPin, LOW);
   fanOff();
 }
 
@@ -61,4 +68,12 @@ void FanTurret::fanOn() {
 
 void FanTurret::fanOff() {
   digitalWrite(fanPin, LOW);
+}
+
+void FanTurret::setCandleFound() {
+  digitalWrite(_candleFoundPin, HIGH);
+}
+
+void FanTurret::setCandleOut() {
+  digitalWrite(_candleOutPin, HIGH);
 }

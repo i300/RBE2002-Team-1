@@ -37,9 +37,11 @@ void BlowOutCandleTask::update() {
       _turret->fanOn();
     } else {
       _turret->fanOff();
-      delay(1000);
+      delay(2500);
       if (!_turret->canSeeCandle()) {
         candleOut = true;
+        _turret->setCandleOut();
+        _driveTrain->recordPosition();
       } else {
         blowAttempts++;
         maxBlowTime = currentTime + 10000 + (2500 * blowAttempts);
@@ -86,6 +88,5 @@ void BlowOutCandleTask::init() {
  * Called once the task is finished. Cleans up the finished task
  */
 void BlowOutCandleTask::finished() {
-  Serial.println("Finished BlowOutCandleTask");
   _driveTrain->stop();
 }

@@ -20,6 +20,7 @@
 
   lastE = {0};
   pos = {0};
+  recordedPosition = {0};
   lastLocalizatonUpdate = 0;
 
   writeToMotors(0, 0);
@@ -226,6 +227,20 @@ void DriveTrain::localize() {
 
 RobotPosition DriveTrain::getRobotPosition() {
   return pos;
+}
+
+RobotPosition DriveTrain::getRecordedPosition() {
+  return recordedPosition;
+}
+
+RobotPosition DriveTrain::recordPosition() {
+  recordedPosition.x = pos.x;
+  recordedPosition.y = pos.y;
+  recordedPosition.theta = pos.theta;
+  float theta = recordedPosition.theta - (PI/2);
+  recordedPosition.x += 12 * cos(theta);
+  recordedPosition.y += 12 * sin(theta);
+  return recordedPosition;
 }
 
 void DriveTrain::update() {

@@ -15,8 +15,11 @@ class FanTurret {
   uint8 fanPin;
   uint8 candleSensorPin;
 
+  uint8 _candleFoundPin;
+  uint8 _candleOutPin;
+
 public:
-  FanTurret(uint8 pinServo, uint8 pinFan, uint8 candlePin);
+  FanTurret(uint8 pinServo, uint8 pinFan, uint8 candlePin, uint8 candleFoundPin, uint8 candleOutPin);
 
   void setAngle(float angle);
   void changeAngle(float dAngle);
@@ -29,6 +32,9 @@ public:
 
   void fanOn();
   void fanOff();
+
+  void setCandleFound();
+  void setCandleOut();
 
 };
 

@@ -28,13 +28,17 @@ protected:
   DriveTrain *_driveTrain;
   FanTurret *_turret;
 
+  bool _returnHome;
+
+  void init();
   void finished();
 
   const float WALL_DISTANCE = 4;
+  const float HOME_THRESHOLD = 5;
   const float kP_wallfollow = 0.05;
 
 public:
-  FollowWallTask(DriveTrain *driveTrain, FanTurret *turret);
+  FollowWallTask(DriveTrain *driveTrain, FanTurret *turret, bool returnHome);
 
   int getState();
 

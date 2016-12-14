@@ -17,6 +17,10 @@ static const uint8 PIN_MOTOR_LEFT_B = 3;
 static const uint8 PIN_MOTOR_RIGHT_A = 8;
 static const uint8 PIN_MOTOR_RIGHT_B = 9;
 
+/* LEDS */
+static const uint8 PIN_LED_CANDLE_FOUND = 11;
+static const uint8 PIN_LED_CANDLE_OUT = 12;
+
 /* SENSORS */
 static const uint8 PIN_SENSOR_STARTBUTTON = 26;
 static const uint8 PIN_SENSOR_ENCODER_SS1 = 28;
