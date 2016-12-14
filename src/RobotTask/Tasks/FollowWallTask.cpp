@@ -25,11 +25,7 @@ void FollowWallTask::update() {
 
   unsigned long currentTime = millis();
 
-  if (_turret->canSeeCandle()) {
-    state = FW_SeenCandleBase;
-  } else {
-    _turret->sweep();
-  }
+  _turret->sweep();
 
   switch (state) {
     case FW_FollowWall: {
@@ -39,6 +35,10 @@ void FollowWallTask::update() {
       float forwardSpeed = 0.5;
       if (frontDistance < 12) {
         forwardSpeed = 0.25;
+      }
+
+      if (_turret->canSeeCandle()) {
+        state = FW_SeenCandleBase;
       }
 
       if (sideDistance < 4) {

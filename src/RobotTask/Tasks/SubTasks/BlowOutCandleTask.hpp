@@ -18,6 +18,10 @@ protected:
 
   int currentAngle = 0;
   int candleValues[NUM_ANGLES];
+  bool candleFound = false;
+  bool candleOut = false;
+  int blowAttempts = 0;
+  unsigned long maxBlowTime = 0;
 
   void init();
   void finished();

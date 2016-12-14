@@ -225,9 +225,7 @@ void DriveTrain::localize() {
 }
 
 RobotPosition DriveTrain::getRobotPosition() {
-  RobotPosition p = {0};
-
-  return p;
+  return pos;
 }
 
 void DriveTrain::update() {

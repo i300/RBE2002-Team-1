@@ -5,14 +5,18 @@ BlowOutCandleTask::BlowOutCandleTask(DriveTrain *driveTrain, FanTurret *turret) 
   _turret = turret;
 
   currentAngle = 0;
+  maxBlowTime = 0;
+  blowAttempts = 0;
+  candleFound = false;
+  candleOut = false;
+  candleFound = false;
 }
 
 /* isFinished - bool8
  * returns true when the task is finished
  */
 bool8 BlowOutCandleTask::isFinished() {
-  // TODO: Implement
-  return false;
+  return candleOut;
 }
 
 /* update - void
@@ -21,30 +25,51 @@ bool8 BlowOutCandleTask::isFinished() {
 void BlowOutCandleTask::update() {
   super::update();
 
+  unsigned long currentTime = millis();
+
   _driveTrain->stop();
 
-  if (currentAngle >= NUM_ANGLES) {
-    float sumAngles = 0;
-    float momentY = 0;
-    for (int i = 0; i < NUM_ANGLES; i++) {
-      sumAngles += candleValues[i];
-      momentY += (float)i * (float)candleValues[i];
-    }
-    //Serial.println("A: " + String(sumAngles));
-    //Serial.println("M: " + String(momentY));
+  if (candleOut) return;
 
-    float centroid = momentY / sumAngles;
-    _turret->setAngle(centroid);
-    _turret->fanOn();
+  if (candleFound) {
+
+    if (currentTime < maxBlowTime) {
+      _turret->fanOn();
+    } else {
+      _turret->fanOff();
+      delay(1000);
+      if (!_turret->canSeeCandle()) {
+        candleOut = true;
+      } else {
+        blowAttempts++;
+        maxBlowTime = currentTime + 10000 + (2500 * blowAttempts);
+      }
+    }
 
   } else {
-    _turret->setAngle(currentAngle);
-    delay(50);
-    candleValues[currentAngle] = _turret->getCandleValue();
+    if (currentAngle >= NUM_ANGLES) {
+      float sumAngles = 0;
+      float momentY = 0;
+      for (int i = 0; i < NUM_ANGLES; i++) {
+        sumAngles += candleValues[i];
+        momentY += (float)i * (float)candleValues[i];
+      }
 
-    Serial.println(candleValues[currentAngle]);
+      float centroid = momentY / sumAngles;
+      _turret->setAngle(180 - centroid);
 
-    currentAngle++;
+      candleFound = true;
+      maxBlowTime = currentTime + 10000;
+      blowAttempts++;
+    } else {
+      _turret->setAngle(currentAngle);
+      delay(50);
+      candleValues[currentAngle] = _turret->getCandleValue();
+
+      Serial.println(candleValues[currentAngle]);
+
+      currentAngle++;
+    }
   }
 }
 
